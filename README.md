@@ -1,14 +1,21 @@
 # BayesQcd
 
-## purpose of the code
-This code implements a rebalance and smear (R&S) prediction for fake-MET backgrounds by carrying out an event-by-event posterior density maximization. The primary use R&S is to analyze real data events and transform them into a set that represents the fake-MET background (e.g., QCD, DY->ee/mumu). This example is based solely on simulated events produced via LO Pythia8 and fed through the Delphes detector simulation program.
+## rebalance and smear (R&S)
+This code implements a rebalance and smear (R&S) prediction for fake-MET backgrounds by carrying out an event-by-event posterior density maximization. The primary use R&S is to analyze real proton-proton collision data events and transform them into a set that represents the fake-MET background (e.g., QCD, DY->ee/mumu). The method is suitable for dark matter and SUSY searches which require large MET in the analysis search regions.  
 
-The following takes as input a provided Delphes QCD sample and produces a flat ROOT tree (skim). The skims contain both the cloned original events as well as new events which have been rebalanced and smeared. Then in the example, the R&S events are compared with the original events, essentially a closure test of the method. Since there are many times more R&S events than original events due to multiple smearing iterations, the simulated R&S events can also be readily used as a background training sample for a multivariate classifier. 
+## exaple use of the code
+The following example takes as input a provided Delphes QCD (simulated) sample and produces a flat ROOT tree (skim). The output file, when corresponding to real data, can be taken as a replacement for QCD Monte Carlo events. The skim contains both the cloned original events as well as new events which have been rebalanced and smeared - the latter are to be analyzed as if they were MC events in order to create the prediction, and the former, in the case in which they are simulated QCD events, can be compared to the prediction as a cross check (closure test). 
 
 ```
 input: QCD Delphes event sample ROOT file, which contains an event tree
 output: flat skim containing original events and R&S events
+
+==>output tree can be analyzed to produce the prediction and a closure test
 ```
+
+Since there are many times more R&S events than original events due to multiple smearing iterations, an alternative use for the simulated R&S events can be as a ready-made background training sample for a multivariate classifier whose goal is to reject fake MET backgrounds. 
+
+
 ## set up code after ensuring an environment in which PYROOT is set
 
 ```
