@@ -23,7 +23,7 @@ gROOT.ProcessLine(open('src/BayesRandS.cc').read())
 exec('from ROOT import *')
 
 ##read in command line arguments
-defaultInfile_ = "../SampleProduction/delphes/rootfiles_widenedhcalStep7/delphes_qcd_12of80.root"
+defaultInfile_ = "/nfs/dust/cms/user/beinsam/RebalanceAndSmear/CMSSW_10_1_0/src//SampleProduction/delphes/rootfiles_widenedhcalStep7/delphes_qcd_12of80.root"
 import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("-v","--verbosity",type=int,default=1,help="analyzer script to batch")
