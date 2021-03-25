@@ -1,10 +1,15 @@
 # BayesQcd
 
+## What this code does
 This code implements a rebalance and smear (R&S) prediction for fake-MET backgrounds by carrying out an event-by-event posterior density maximization. The primary use R&S is to analyze real data events and transform them into a set that represents the fake-MET background (e.g., QCD, DY->ee/mumu). This example is based solely on simulated events produced via LO Pythia8 and fed through the Delphes detector simulation program.
 
-The following takes as input a provided Delphes QCD sample and skims a maximally flat ROOT tree, both cloning the original events and adding new events which have been rebalanced and smeared. Then in the example, the R&S events are compared with the original events, essentially creating a closure test of the method. As there are orders of magnitude more R&S events than original events, the R&S events can also be readily used as a background training sample for a multivariate classifier. 
+The following takes as input a provided Delphes QCD sample and produces a flat ROOT tree (skim). The skims contain both the cloned original events as well as new events which have been rebalanced and smeared. Then in the example, the R&S events are compared with the original events, essentially a closure test of the method. Since there are many times more R&S events than original events due to multiple smearing iterations, the simulated R&S events can also be readily used as a background training sample for a multivariate classifier. 
 
-## Set up code, for example, on a
+```
+input: QCD Delphes event sample ROOT file, which contains an event tree
+output: flat skim containing original events and R&S events
+```
+## Set up code after ensuring an environment in which PYROOT is set
 
 ```
 git clone https://github.com/sbein/BayesQcd/
