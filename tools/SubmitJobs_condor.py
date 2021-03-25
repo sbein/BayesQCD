@@ -86,6 +86,7 @@ cd $timestamp
 cp -r CWD/tools .
 cp -r CWD/usefulthings .
 cp -r CWD/src .
+cp -r CWD/dataset .
 python tools/ANALYZER --fnamekeyword FNAMEKEYWORD MOREARGS > CWD/jobs/JOBNAME.out > CWD/jobs/JOBNAME.out 2> CWD/jobs/JOBNAME.err
 mv *.root CWD/output/smallchunks
 cd ../

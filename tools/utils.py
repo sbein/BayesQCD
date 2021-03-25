@@ -444,7 +444,7 @@ def FabDraw(cGold,leg,hObserved,hComponents,datamc='mc',lumi='arbitrary', title 
 	else:
 		for ihComp, hComp in enumerate(hComponents):
 			leg.AddEntry(hComp, hComp.GetTitle(),'lpf')      
-		leg.AddEntry(hObserved,title0,'lp')    
+        ############leg.AddEntry(hObserved,title0,'lp')    
 	hObserved.SetTitle('')
 	hComponents[0].SetTitle('')	
 	hComponents[0].Draw('hist')

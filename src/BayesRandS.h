@@ -215,7 +215,7 @@ bool RebalanceJets(std::vector<UsefulJet> originalJets){
   gMinuit->mnexcm( "MINIMIZE", arglist, 2, ierflg );
   //cout << "minimized" << endl;
   if (ierflg!=0){
-    cout << "ierflg!=0" << endl;
+    //cout << "ierflg!=0" << endl;
     TLorentzVector omhtVec = getHardMet(originalJets, JET_PT_THRESH);
     TLorentzVector rmhtVec = getHardMet(_Templates_.dynamicJets, JET_PT_THRESH);
     return false;

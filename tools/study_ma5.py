@@ -7,6 +7,9 @@ from utils import *
 #from ra2blibs import *
 import time
 
+ma5version = ''
+ma5version = 'MA5'
+
 ###stuff that would be nice in a config file
 mhtjetetacut = 5.0 # also needs be be changed in UsefulJet.h
 AnHardMetJetPtCut = 30.0
@@ -79,12 +82,20 @@ inputFiles = ['/nfs/dust/cms/user/mrowietm/delphesfiles/madgraph_based/archive/T
 inputFiles = ['/nfs/dust/cms/user/mrowietm/delphesfiles/pythia_based/T1qqqq-1300-100_delphesout.root']#pythia
 #inputFiles = ['/nfs/dust/cms/user/mrowietm/delphesfiles/pythia_based']
 #inputFiles = ['/nfs/dust/cms/user/mrowietm/delphesfiles/pythia_based/T1bbbb-1300-1100_delphesout.root']
-inputFiles = ['/nfs/dust/cms/user/mrowietm/delphesfiles/madgraph_based/T1bbbb_1300_1100_delphesout.root']
+#inputFiles = ['/nfs/dust/cms/user/mrowietm/delphesfiles/madgraph_based/T1bbbb_1300_1100_delphesout.root']
 #inputFiles = ['/nfs/dust/cms/user/mrowietm/delphesfiles/madgraph_based/archive/T5qqqqVV_1800_100_delphesout.root']
-inputFiles = ['/nfs/dust/cms/user/mrowietm/delphesfiles/madgraph_based/T5qqqqVV_1800_100_delphesout.root']
-inputFiles = ['/nfs/dust/cms/user/mrowietm/delphesfiles/madgraph_based/T5qqqqVV_1800_100_delphesout.root']
+#inputFiles = ['/nfs/dust/cms/user/mrowietm/delphesfiles/madgraph_based/T5qqqqVV_1800_100_delphesout.root']
+#inputFiles = ['/nfs/dust/cms/user/mrowietm/delphesfiles/madgraph_based/T5qqqqVV_1800_100_delphesout.root']
 #inputFiles = ['/nfs/dust/cms/user/mrowietm/delphesfiles/pythia_based/T5qqqqVV-1800-100_delphesout.root']
+inputFiles = ['/nfs/dust/cms/user/mrowietm/delphesfiles/madgraph_based/T1qqqq_1300_100_Bmore_delphesout.root']
+#inputFiles = ['/nfs/dust/cms/user/mrowietm/delphesfiles/madgraph_based/T1bbbb_1300_1100_B_delphesout.root']
+inputFiles = ['/nfs/dust/cms/user/mrowietm/delphesfiles/madgraph_based/T1bbbb_1800_200_Bmore_delphesout.root']
+inputFiles = ['/nfs/dust/cms/user/mrowietm/delphesfiles/madgraph_based/T1bbbb_1300_1100_Bmore_delphesout.root']
+inputFiles = ['/nfs/dust/cms/user/mrowietm/delphesfiles/madgraph_based/bestshot_nomistag/T2bb_1000_100_delphesout.root']
 
+#intputfiles = ['/nfs/dust/cms/user/mrowietm/delphesfiles/madgraph_based/Sam_Special/T2bb_1000_100_delphesout.root']
+
+inputFiles = ['/nfs/dust/cms/user/mrowietm/delphesfiles/madgraph_based/T2bb_1000_100_delphesout.root']
 
 ##declare and load a tree
 c = TChain('Delphes')
@@ -100,14 +111,14 @@ print 'n(entries) =', n2process
 treeReader = ExRootTreeReader(c)
 numberOfEntries = treeReader.GetEntries()
 branchHT = treeReader.UseBranch("ScalarHT")
-branchJets = treeReader.UseBranch("Jet")
+branchJets = treeReader.UseBranch("Jet"+ma5version)
 branchGenJet = treeReader.UseBranch("GenJet")
 branchMissingET = treeReader.UseBranch("MissingET")
 branchGenMissingET = treeReader.UseBranch("GenMissingET")
-branchPhoton = treeReader.UseBranch("Photon")
-branchElectron = treeReader.UseBranch("Electron")
+branchPhoton = treeReader.UseBranch("Photon"+ma5version)
+branchElectron = treeReader.UseBranch("Electron"+ma5version)
 branchEvent = treeReader.UseBranch("Event")
-branchMuon = treeReader.UseBranch("Muon")
+branchMuon = treeReader.UseBranch("Muon"+ma5version)
 
 #branchTower = treeReader.UseBranch("Tower")
 #branchEFlowTower = treeReader.UseBranch("EFlowPhoton")
@@ -141,7 +152,7 @@ templateFileName = 'usefulthings/llhd-prior-coarse-240files.root'
 templateFileName = 'usefulthings/llhd-prior-coarse-1p2width.root'
 
 
-#templateFileName = 'usefulthings/llhd-prior-MetSignificance.root'
+templateFileName = 'usefulthings/llhd-prior-MetSignificance.root'
 ftemplate = TFile(templateFileName)
 print 'using templates from',templateFileName
 hPtTemplate = ftemplate.Get('hPtTemplate')
@@ -185,6 +196,22 @@ hTotFit = TH1F('hTotFit','hTotFit',10,0,10)
 hTotFit.Sumw2()
 
 
+hPtBJet = TH1F('hPtBJet','hPtBJet',50,0,2000)
+hPtBJetTagged = TH1F('hPtBJetTagged','hPtBJetTagged',50,0,2000)
+hPtBJet.Sumw2()
+hPtBJetTagged.Sumw2()
+
+
+hLeadGenJetPt = TH1F('hLeadGenJetPt','hLeadGenJetPt',50,0,2000)
+hLeadGenJetPt.Sumw2()
+
+hLeadJetPt = TH1F('hLeadJetPt','hLeadJetPt',50,0,2000)
+hLeadJetPt.Sumw2()
+
+hNbFlavor = TH1F('hNbFlavor','hNbFlavor',4,0,4)
+
+hNbjetsGen = TH1F('hNbjetsGen','hNbjetsGen',4,0,4)
+
 
 hPtGenLeptons = TH1F('hPtGenLeptons','hPtGenLeptons',25,0,500)
 histoStyler(hPtGenLeptons,kBlack)
@@ -224,7 +251,7 @@ xsec_times_lumi_over_nevents = 1.0
 t0 = time.time()
 
 
-#n2process = 10000
+n2process = 10000
 
 for ientry in range(n2process):
 
@@ -249,6 +276,7 @@ for ientry in range(n2process):
     #build up the vector of jets using TLorentzVectors; 
     #this is where you have to interface with the input format you're using
 
+ 
 
 
     #######if not nspikes==0: continue #####spikes!
@@ -260,6 +288,59 @@ for ientry in range(n2process):
         phopt, phoeta = -1, -11
 
     genweight = branchEvent[0].Weight
+    if genweight==0: continue
+
+    nb_ = 0
+    bs = []
+    partons = []
+    for part in branchParticles:
+        #if not part.PT>100: continue
+        #if not (abs(part.PID)>=100 and abs(part.PID)<900): continue
+        if not (abs(part.PID)>=0 and abs(part.PID)<7): continue
+        #if not abs(part.PID)<1000000: continue
+        #if not  part.Status==2: continue
+        #print 'part.PID', part.PID
+        tlv = TLorentzVector(part.Px,part.Py,part.Pz,part.E)
+        if not (part.Status==23 or part.Status==24): continue        
+        partons.append([tlv, part.PID])
+        #if not part.PT>30: continue
+        if abs(part.PID)==5: 
+            bs.append(tlv)
+        
+    nbgen=0
+    for ij, jet in enumerate(branchGenJet):
+        if ij==0:
+            fillth1(hLeadGenJetPt, jet.PT)
+        if not jet.PT>30: continue
+        if not abs(jet.Eta)<2.4: continue
+        gtlv = TLorentzVector()
+        gtlv.SetPtEtaPhiE(jet.PT,jet.Eta,jet.Phi,jet.PT)
+        isb = False
+        maxpartonpt = 0
+        partonflavor = -1
+        for parton in partons:
+            if gtlv.DeltaR(parton[0])<0.4:
+                if parton[0].Pt()>maxpartonpt: 
+                   maxpartonpt = parton[0].Pt()
+                   partonflavor = parton[1] 
+        #if abs(partonflavor)>500 and abs(partonflavor)<600: nbgen+=1
+        if abs(partonflavor)==5: nbgen+=1            
+            
+    print 'hNbjetsGen', nbgen
+    fillth1(hNbjetsGen,nbgen)
+        #methods = dir(jet)
+        #for method in methods:
+        #    if '_' in method: continue
+        #    print 'methods', ientry, ij, getattr(jet, method), method
+        #    if 'Print' in method: break
+    #exit(0)
+
+    
+    for ij, jet in enumerate(branchJets):
+        if ij==0:
+            fillth1(hLeadJetPt, jet.PT)            
+
+        
     if debugmode or searchmode:
         genthingies = []
         rawgenmhtthingy = TLorentzVector()
@@ -335,6 +416,7 @@ for ientry in range(n2process):
     #this is where you have to interface with the input format you're using
 
     onlygoodjets = True
+    nb = 0
     for ijet, jet in enumerate(branchJets):
     ##for ijet, jet in enumerate(branchGenJet):        
     #if debugmode: print 'initially looking at jet', ijet, jet.PT, jet.EhadOverEem
@@ -345,32 +427,33 @@ for ientry in range(n2process):
         tlvjet = TLorentzVector()
         tlvjet.SetPtEtaPhiE(jet.PT, jet.Eta, jet.Phi, jet.PT*TMath.CosH(jet.Eta))
 
-        if debugmode:
-            if abs(jet.PT-839.98)<1: 
-                gmethods = dir(jet)
-                print gmethods
-                for ipart, part in enumerate(jet.Particles):
-                    print ijet, ipart, 'jetparticle', ipart, part.PT, part.PID, part.Eta
-                part0 = jet.Particles[0]
-                part1 = jet.Particles[1]
-                tlv0 = TLorentzVector()
-                tlv1 = TLorentzVector()
-                
-                tlv0.SetPtEtaPhiE(part0.PT, part0.Eta, part0.Phi, part0.E)
-                tlv1.SetPtEtaPhiE(part1.PT, part1.Eta, part1.Phi, part1.E)                
-                print 'deltaR', tlv0.DeltaR(tlv1)
-                for gmethod in gmethods[:40]:
-                    try:  print 'method', gmethod+':', getattr(jet, gmethod)
-                    except: pass  
-                for igjet, gjet in enumerate(branchGenJet):		
-                    #if not jet.PT>15: continue
-                    #if not abs(jet.Eta)<5: continue
-                    tlvgjet = TLorentzVector()
-                    tlvgjet.SetPtEtaPhiE(gjet.PT, gjet.Eta, gjet.Phi, gjet.PT*TMath.CosH(gjet.Eta))
-                    print 'testing this gen jet with pT', gjet.PT, tlvjet.DeltaR(tlvgjet)
                         
         ##ujet = UsefulJet(tlvjet, jet.BTag)
-        ujet = UsefulJet(tlvjet, 0)
+        if not jet.PT>30: continue
+        if not abs(jet.Eta)<2.4: continue  
+
+        maxpartonpt = 0
+        partonflavor = -1
+        for parton in partons:
+            if tlvjet.DeltaR(parton[0])<0.4:
+                if parton[0].Pt()>maxpartonpt: 
+                    maxpartonpt = parton[0].Pt()
+                    partonflavor = parton[1] 
+        #if abs(partonflavor)>500 and abs(partonflavor)<600: nb+=1
+        if abs(partonflavor)==5: nb+=1
+                
+        #if jet.PT<550: 
+        ujet = UsefulJet(tlvjet, jet.BTag)
+        #else: ujet = UsefulJet(tlvjet, 0)
+
+
+
+        
+        if abs(jet.Flavor==5): 
+            fillth1(hPtBJet, jet.PT)
+            if jet.BTag:
+                fillth1(hPtBJetTagged, jet.PT)
+
         if calcMinDr(acme_objects, ujet, 0.3)<0.3:
             if debugmode: print 'throwing away reco jet', ujet.Pt()
             continue
@@ -381,12 +464,8 @@ for ientry in range(n2process):
         ##if ujet.Pt()>50 and jet.EhadOverEem>100: 
         ##    onlygoodjets = False
         ##    #print ijet, 'bad jet'
-    if not onlygoodjets: 
-        a = 2
-        #print 'skipping on jet requirement'
-        #continue
 
-
+    fillth1(hNbFlavor, nb)
     tHardMetVec = getHardMet(recojets,AnHardMetJetPtCut, mhtjetetacut) # for debugging
     tHardMhtVec = tHardMetVec.Clone() # for debugging
     tHardMetVec-=AcmeVector # for debugging
@@ -483,7 +562,7 @@ for ientry in range(n2process):
 
     #met_consistency = abs(branchMissingET[0].MET-tHardMetPt)/tHardMetPt
     #if not met_consistency<0.5: continue
-    if abs(branchMissingET[0].MET-tHardMetPt)<100:
+    if abs(branchMissingET[0].MET-tHardMetPt)<80:
         if searchmode or debugmode: 
             continue        
     else:
@@ -589,6 +668,15 @@ if mktree:
     littletree.Write()
     treefile.Close()
 
+hPtBJet.Write()
+hPtBJetTagged.Write()
+eff = TEfficiency(hPtBJetTagged,hPtBJet)
+eff.Write('hBJetPt_eff')
+
+hLeadGenJetPt.Write()
+hLeadJetPt.Write()
+hNbFlavor.Write()
+hNbjetsGen.Write()
 print 'just created', fnew.GetName()
 fnew.Close()
 

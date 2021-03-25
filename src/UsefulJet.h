@@ -13,6 +13,8 @@
 
 //using namespace std;
 
+
+//Value works for binary b-tagger, a' la Delphes
 double BTAG_CSV = 0.5;
 
 struct UsefulJet
