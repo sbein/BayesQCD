@@ -1,53 +1,33 @@
 # BayesQcd
 
-This is the package for running a photon-friendly rebalance and smear implementation on Ra2/b-style ntuples while on an LPC machine. 
-## Set up code in a nobackup area (modify appropriately if you forked the repo)
+This code implements a rebalance and smear (R&S) prediction for fake-MET backgrounds by carrying out an event-by-event posterior density maximization. The primary use R&S is to analyze real data events and transform them into a set that represents the fake-MET background (e.g., QCD, DY->ee/mumu). This example is based solely on simulated events produced via LO Pythia8 and fed through the Delphes detector simulation program.
+
+The following takes as input a provided Delphes QCD sample and skims a maximally flat ROOT tree, both cloning the original events and adding new events which have been rebalanced and smeared. Then in the example, the R&S events are compared with the original events, essentially creating a closure test of the method. As there are orders of magnitude more R&S events than original events, the R&S events can also be readily used as a background training sample for a multivariate classifier. 
+
+## Set up code, for example, on a
 
 ```
-cmsrel CMSSW_10_1_0
-cd CMSSW_10_1_0/src
-cmsenv
 git clone https://github.com/sbein/BayesQcd/
 cd BayesQcd/
 mkdir jobs
 mkdir output
 mkdir pdfs
-mkdir pdfs/ClosureTests
 ```
 
 ### Run the rebalance and smear code
-I'm skipping the steps needed to create the prior and smearing templates. This command will run rebalance and smear and create histograms for the "truth" and "method" distributions with 10,000 events in one GJets file:
+Straght away, let's run the code over a QCD file by doing: 
 
 ```
-python tools/MaximizePosteriorTM.py --fnamekeyword Summer16v3.GJets_DR-0p4_HT-600 --quickrun True
+python tools/MaximizePosteriorClean.py --quickrun True
 ```
 
-Generate plots overlaying observed and R&S histograms
+This script takes as input the jet response histograms and prior PDF histograms, which should be remade each time the experiment changes. 
+Generate plots overlaying observed and R&S histograms. The option --quickrun species to only analyze the first 5k events. R&S takes .1s/event, so large data sets and real world problems should be interfaced with a batch system. 
 
+One can open up this file and browse the TTree object (littletree). Note it contains a branch IsRandS, which is a boolean that specifies whether an event is an original un-sullied seed event, or a rebalanced and smeared event. The latter forms the basis of the prediction, and is what is used in the real data. We can also call this script to draw weighted comparisons between the original and R&S distributions:
 ```
-python tools/closurePlotter.py <output file from previous step>
-```
-
-This creates pdfs and a root file with canvases. You'll notice your histograms will likely suffer from low statistics, which is why it's good to use the batch system heavily when doing this (iteration time can be about 20 minutes to an hour). 
-
-
-### Submit jobs to the condor batch system
-
-This script defaults to submitting one job per input file. Assuming you have a valid proxy, the following script will initiate a large submission. Notice the first command below cleans up the jobs directory. It is important to do this before you submit. The script also suggests you to delete the output directory where your root files are returned so it can have a clean start. 
-
-```
-bash tools/CleanJobs.sh
-python tools/submitjobs.py --analyzer tools/MaximizePosteriorTM.py --fnamekeyword Summer16v3.GJets_DR-0p4_HT --quickrun True
-```
-The quickrun option set to true tells the script to only run over 10,000 events per file. This argument can be removed when you're ready to max out your statistics. Output files will be put in the local output/<keyword> directory matching the specified keyword for the filename. The status of the jobs can be checked with
-
-```
-condor_q |grep <your user name>
+python tools/DrawAnalyzeClean.py littletree-delphes_qcd_12of80.root
 ```
 
-Once the jobs are done, a wrapper for the hadd routine can be called which also fits a spline to each response function:
-```
-python tools/mergeHistosFinalizeWeights.py output/<folder name>
-```
+This creates both a set of pdfs as well as a root file with canvases. You'll notice your histograms will likely suffer from low statistics, which is why it's good to use the batch system for a large test.
 
-This applies the 1/n(simulated) on top of your the lumi*xsec weights, the latter of which was applied in the analyzer script. mergeHistosFinalizeWeights.py has hard code keywords defining the different datasets, each one corresponding to a unique cross section. If you want to run over another set of datasets, like inclusive QCD samples, you'd have to change these keywords by giving one key word per desired unique cross section. It creates a single file on which you can run the closurePlotter.py script. 
