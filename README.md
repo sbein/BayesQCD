@@ -36,12 +36,12 @@ python tools/MaximizePosteriorClean.py --quickrun True [--fnamekeyword <path Del
 ```
 
 This script takes as input the jet response histograms and prior PDF histograms, which should be remade each time the experiment changes. 
-Generate plots overlaying observed and R&S histograms. The option --quickrun species to only analyze the first 5k events. R&S takes 0.1 s/evt, so large data sets and real world problems should be interfaced with a batch system. 
+ The option --quickrun says only analyze the first 5k events. R&S takes 0.1 s/evt, so large data sets and real world problems are best interfaced with a batch system. 
 
 One can open up this file and browse the TTree object (littletree). Note it contains a branch IsRandS, which is a boolean that specifies whether an event is an original un-sullied seed event (false) or a rebalanced and smeared event (true). The latter forms the basis of the prediction, and is what is used in the real data. We can also call this script to draw weighted comparisons between the original and R&S distributions:
 ```
 python tools/DrawAnalyzeClean.py littletree-delphes_qcd_12of80.root
 ```
 
-This creates both a set of pdfs as well as a root file with canvases. You'll notice your histograms will likely suffer from low statistics, which is why it's good to use the batch system for a large test.
+This creates both a set of pdfs as well as a root file with canvases. The dictionary plotBundle can be modified to produce additional plots which are specified by expressions involving the names of the branches of the skim. One will notice that in this example, the histograms  suffer somewhat from low statistics, but it's just an example based on one file. 
 
