@@ -50,12 +50,12 @@ vetoleptons = True
 ##declare and load a tree
 c = TChain('Delphes')
 for fname in inputFiles: 
-    print 'adding',fname
+    print ('adding '+fname)
     c.Add(fname)
 nentries = c.GetEntries()
 c.Show(0)
 n2process = min(n2process,nentries)
-print 'n(entries) =',n2process
+print ('n(entries) = '+str(n2process))
 
 #feed the tree to delphes,set up which branches need to be used
 treeReader = ExRootTreeReader(c)
@@ -79,7 +79,7 @@ python tools/articulateSplines.py "<path-to-output/*.root>"
 '''
 templateFileName = 'usefulthings/llhd-prior-coarse-realisticHcal.root'
 ftemplate = TFile(templateFileName)
-print 'using templates from',templateFileName
+print ('using templates from '+ templateFileName)
 hPtTemplate = ftemplate.Get('hPtTemplate')
 templatePtAxis = hPtTemplate.GetXaxis()
 hEtaTemplate = ftemplate.Get('hEtaTemplate')
@@ -93,7 +93,7 @@ templateStAxis = hHtTemplate.GetXaxis()
 infileID = fnamekeyword.split('/')[-1].replace('.root','')
 newname = 'littletree-'+infileID+'.root'
 fnew = TFile(newname,'recreate')
-print 'creating',newname
+print ('creating '+newname)
 
 CrossSectionPb = np.zeros(1,dtype=float)
 
@@ -113,7 +113,6 @@ elif 'Top' in fnamekeyword:
 elif 'T2qq' in fnamekeyword:
     CrossSectionPb[0] = 4*0.0323744#this is for 14 TeV T2qq-1150GeV, x4 for squark degeneracy 
     nsmears = 10   
-    print 'triggering t2qq cross section'
 elif 'Weak' in fnamekeyword:
     CrossSectionPb[0] = 1.430e-05  * 1000000000
     nsmears = 1
@@ -126,7 +125,7 @@ else:
     nsmears = 0              
 
 
-print 'CrossSectionPb[0]', CrossSectionPb[0]
+print ('CrossSectionPb[0] '+str(CrossSectionPb[0]))
 littletree = TTree('littletree','littletree')
 tcounter = TTree('tcounter','tcounter')
 HT = np.zeros(1,dtype=float)
@@ -198,7 +197,7 @@ hTotFit.Sumw2()
 
 
 #GleanTemplatesFromFile(ftemplate)
-print 'listing contents of prior:'
+print ('listing contents of prior:')
 fprior.ls('splines/*')
 
 #GleanTemplatesFromFile(ftemplate,fprior)
@@ -212,7 +211,7 @@ for ientry in range(n2process):
     c.GetEntry(ientry)
 
     if ientry%printevery==0:
-        print "processing event",ientry,'/',n2process,'time',time.time()-t0,branchMissingET[0].MET
+        print ("processing event %d/%d; time remaining: %f"(ientry,n2process,time.time()-t0,branchMissingET[0].MET))
 
     tcounter.Fill()
     weight = CrossSectionPb
@@ -405,39 +404,39 @@ for ientry in range(n2process):
         
     weight = CrossSectionPb / nsmears
 
-    if maketree:
-        if tHardMetPt>hardMetCutForSkim:
-            Jets.clear()
-            jetsRebalanced.clear()
-            Jets_btag.clear()
 
-            for ujet in recojets:
-                Jets.push_back(ujet.tlv)
+    if tHardMetPt>hardMetCutForSkim:
+        Jets.clear()
+        jetsRebalanced.clear()
+        Jets_btag.clear()
 
-            for ujet in rebalancedJets:
-                jetsRebalanced.push_back(ujet.tlv)                
+        for ujet in recojets:
+            Jets.push_back(ujet.tlv)
 
-            HardMetPt[0] = tHardMetPt
-            MinDPhiJetsHardMet[0] = tmindphi
-            HT[0] = tHt
-            NJets[0] = tNJets
+        for ujet in rebalancedJets:
+            jetsRebalanced.push_back(ujet.tlv)                
 
-            if NJets[0]>0: Jet1Pt[0],Jet1Eta[0],Jet1DPhi[0] = Jets[0].Pt(),Jets[0].Eta(),Jets[0].DeltaPhi(tHardMetVec)
-            else: Jet1Pt[0],Jet1Eta[0],Jet1DPhi[0] = 0,-4,-4
-            if NJets[0]>1: Jet2Pt[0],Jet2Eta[0],Jet2DPhi[0] = Jets[1].Pt(),Jets[1].Eta(),Jets[1].DeltaPhi(tHardMetVec)
-            else: Jet2Pt[0],Jet2Eta[0],Jet2DPhi[0] = 0,-4,-4       
-            if NJets[0]>2: Jet3Pt[0],Jet3Eta[0],Jet3DPhi[0] = Jets[2].Pt(),Jets[2].Eta(),Jets[2].DeltaPhi(tHardMetVec)
-            else: Jet3Pt[0],Jet3Eta[0],Jet3DPhi[0] = 0,-4,-4
-            if NJets[0]>3: Jet4Pt[0],Jet4Eta[0],Jet4DPhi[0] = Jets[3].Pt(),Jets[3].Eta(),Jets[3].DeltaPhi(tHardMetVec)
-            else: Jet4Pt[0],Jet4Eta[0],Jet4DPhi[0] = 0,-4,-4  
+        HardMetPt[0] = tHardMetPt
+        MinDPhiJetsHardMet[0] = tmindphi
+        HT[0] = tHt
+        NJets[0] = tNJets
 
-            BTags[0] = tBTags
-            NSmearsPerEvent[0] = nsmears
-            IsRandS[0] = 0
-            NLeps[0] = len(recomuons)+len(recoelectrons)
-            FitSucceed[0] = fitsucceed
+        if NJets[0]>0: Jet1Pt[0],Jet1Eta[0],Jet1DPhi[0] = Jets[0].Pt(),Jets[0].Eta(),Jets[0].DeltaPhi(tHardMetVec)
+        else: Jet1Pt[0],Jet1Eta[0],Jet1DPhi[0] = 0,-4,-4
+        if NJets[0]>1: Jet2Pt[0],Jet2Eta[0],Jet2DPhi[0] = Jets[1].Pt(),Jets[1].Eta(),Jets[1].DeltaPhi(tHardMetVec)
+        else: Jet2Pt[0],Jet2Eta[0],Jet2DPhi[0] = 0,-4,-4       
+        if NJets[0]>2: Jet3Pt[0],Jet3Eta[0],Jet3DPhi[0] = Jets[2].Pt(),Jets[2].Eta(),Jets[2].DeltaPhi(tHardMetVec)
+        else: Jet3Pt[0],Jet3Eta[0],Jet3DPhi[0] = 0,-4,-4
+        if NJets[0]>3: Jet4Pt[0],Jet4Eta[0],Jet4DPhi[0] = Jets[3].Pt(),Jets[3].Eta(),Jets[3].DeltaPhi(tHardMetVec)
+        else: Jet4Pt[0],Jet4Eta[0],Jet4DPhi[0] = 0,-4,-4  
 
-            littletree.Fill()
+        BTags[0] = tBTags
+        NSmearsPerEvent[0] = nsmears
+        IsRandS[0] = 0
+        NLeps[0] = len(recomuons)+len(recoelectrons)
+        FitSucceed[0] = fitsucceed
+
+        littletree.Fill()
 
 
     for i in range(nsmears):
@@ -464,35 +463,34 @@ for ientry in range(n2process):
             if not abs(jet.Eta())<2.4: continue            
             rpsmindphi = min(rpsmindphi,abs(jet.DeltaPhi(rpsHardMetVec)))            
 
-        if maketree:
-            if rpsHardMetPt>hardMetCutForSkim:
-                Jets.clear()
-                jetsRebalanced.clear()
-                Jets_btag.clear()
+        if rpsHardMetPt>hardMetCutForSkim:
+            Jets.clear()
+            jetsRebalanced.clear()
+            Jets_btag.clear()
 
-                for ujet in RplusSJets:
-                    Jets.push_back(ujet.tlv)
+            for ujet in RplusSJets:
+                Jets.push_back(ujet.tlv)
 
-                for ujet in rebalancedJets:
-                    jetsRebalanced.push_back(ujet.tlv)                
-                HardMetPt[0] = rpsHardMetPt
-                MinDPhiJetsHardMet[0] = rpsmindphi
-                HT[0] = rpsHt
-                NJets[0] = rpsNJets
-                if NJets[0]>0: Jet1Pt[0],Jet1Eta[0],Jet1DPhi[0] = Jets[0].Pt(),Jets[0].Eta(),Jets[0].DeltaPhi(tHardMetVec)
-                else: Jet1Pt[0],Jet1Eta[0],Jet1DPhi[0] = 0,-4,-4
-                if NJets[0]>1: Jet2Pt[0],Jet2Eta[0],Jet2DPhi[0] = Jets[1].Pt(),Jets[1].Eta(),Jets[1].DeltaPhi(tHardMetVec)
-                else: Jet2Pt[0],Jet2Eta[0],Jet2DPhi[0] = 0,-4,-4       
-                if NJets[0]>2: Jet3Pt[0],Jet3Eta[0],Jet3DPhi[0] = Jets[2].Pt(),Jets[2].Eta(),Jets[2].DeltaPhi(tHardMetVec)
-                else: Jet3Pt[0],Jet3Eta[0],Jet3DPhi[0] = 0,-4,-4
-                if NJets[0]>3: Jet4Pt[0],Jet4Eta[0],Jet4DPhi[0] = Jets[3].Pt(),Jets[3].Eta(),Jets[3].DeltaPhi(tHardMetVec)
-                else: Jet4Pt[0],Jet4Eta[0],Jet4DPhi[0] = 0,-4,-4                 
-                BTags[0] = rpsBTags
-                NSmearsPerEvent[0] = nsmears
-                IsRandS[0] = 1
-                NLeps[0] = len(recomuons)+len(recoelectrons)
-                FitSucceed[0] = fitsucceed                
-                littletree.Fill()
+            for ujet in rebalancedJets:
+                jetsRebalanced.push_back(ujet.tlv)                
+            HardMetPt[0] = rpsHardMetPt
+            MinDPhiJetsHardMet[0] = rpsmindphi
+            HT[0] = rpsHt
+            NJets[0] = rpsNJets
+            if NJets[0]>0: Jet1Pt[0],Jet1Eta[0],Jet1DPhi[0] = Jets[0].Pt(),Jets[0].Eta(),Jets[0].DeltaPhi(tHardMetVec)
+            else: Jet1Pt[0],Jet1Eta[0],Jet1DPhi[0] = 0,-4,-4
+            if NJets[0]>1: Jet2Pt[0],Jet2Eta[0],Jet2DPhi[0] = Jets[1].Pt(),Jets[1].Eta(),Jets[1].DeltaPhi(tHardMetVec)
+            else: Jet2Pt[0],Jet2Eta[0],Jet2DPhi[0] = 0,-4,-4       
+            if NJets[0]>2: Jet3Pt[0],Jet3Eta[0],Jet3DPhi[0] = Jets[2].Pt(),Jets[2].Eta(),Jets[2].DeltaPhi(tHardMetVec)
+            else: Jet3Pt[0],Jet3Eta[0],Jet3DPhi[0] = 0,-4,-4
+            if NJets[0]>3: Jet4Pt[0],Jet4Eta[0],Jet4DPhi[0] = Jets[3].Pt(),Jets[3].Eta(),Jets[3].DeltaPhi(tHardMetVec)
+            else: Jet4Pt[0],Jet4Eta[0],Jet4DPhi[0] = 0,-4,-4                 
+            BTags[0] = rpsBTags
+            NSmearsPerEvent[0] = nsmears
+            IsRandS[0] = 1
+            NLeps[0] = len(recomuons)+len(recoelectrons)
+            FitSucceed[0] = fitsucceed                
+            littletree.Fill()
 	
 
 fnew.cd()
@@ -505,7 +503,7 @@ hTotFit.Write()
 
 littletree.Write()
 tcounter.Write()
-print 'just created',fnew.GetName()
+print ('just created'+fnew.GetName())
 fnew.Close()
 
 
