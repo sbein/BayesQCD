@@ -4,7 +4,7 @@
 This code implements a rebalance and smear (R&S) prediction for fake-MET backgrounds by carrying out an event-by-event posterior density maximization. The primary use R&S is to analyze real proton-proton collision data events and transform them into a set that represents the fake-MET background (e.g., QCD, DY->ee/mumu). The method is suitable for dark matter and SUSY searches which require large MET in the analysis search regions.  
 
 ## example: make QCD prediction based on simulation
-The following example takes as input a provided Delphes QCD (simulated) sample and produces a flat ROOT tree (\textbf{skim}). The output file, when corresponding to real data, can be taken as a replacement for QCD Monte Carlo events. The skim contains both the cloned original events as well as new events which have been rebalanced and smeared - the latter are to be analyzed as if they were MC events in order to create the prediction, and the former, in the case in which they are simulated QCD events, can be compared to the prediction as a cross check (closure test). 
+The following example takes as input a provided Delphes QCD (simulated) sample and produces a flat ROOT tree (**skim**). The output file, when corresponding to real data, can be taken as a replacement for QCD Monte Carlo events. The skim contains both the cloned original events as well as new events which have been rebalanced and smeared - the latter are to be analyzed as if they were MC events in order to create the prediction, and the former, in the case in which they are simulated QCD events, can be compared to the prediction as a cross check (closure test). 
 
 ```
 input: QCD Delphes event sample ROOT file, which contains an event tree
