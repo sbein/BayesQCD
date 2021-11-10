@@ -6,6 +6,8 @@ from glob import glob
 import numpy as np
 import time
 
+#python tools/MaximizePosteriorMakeTree.py --fnamekeyword /nfs/dust/cms/user/beinsam/RebalanceAndSmear/CMSSW_10_1_0/src/SampleProduction/delphes/rootfiles_widenedhcalStep7/delphes_Weak_98of499.root
+
 ### a few parameters to set that define the selection associated with the hard MET
 hardmet_jetetacut = 5.0 # eta acceptance for jets in hard MET
 hardmet_jetptcut = 30.0 # pT threshold for jets going in to hard MET
@@ -27,7 +29,7 @@ defaultInfile_ = "/nfs/dust/cms/user/beinsam/RebalanceAndSmear/CMSSW_10_1_0/src/
 import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("-v","--verbosity",type=int,default=1,help="analyzer script to batch")
-parser.add_argument("-printevery","--printevery",type=int,default=200,help="short run")
+parser.add_argument("-printevery","--printevery",type=int,default=1000,help="short run")
 parser.add_argument("-fin","--fnamekeyword",type=str,default=defaultInfile_,help="file")
 parser.add_argument("-quickrun","--quickrun",type=bool,default=False,help="short run")
 args = parser.parse_args()
@@ -36,10 +38,6 @@ inputFiles = glob(fnamekeyword)
 verbosity = args.verbosity
 printevery = args.printevery
 quickrun = args.quickrun
-if quickrun: 
-    n2process = 5000
-    if 'T2' in fnamekeyword: n2process = 5000
-else: n2process = 9999999999999
 
 #Delphes b-tagging binary
 BTag_Cut = 0.5 
@@ -54,7 +52,9 @@ for fname in inputFiles:
     c.Add(fname)
 nentries = c.GetEntries()
 c.Show(0)
-n2process = min(n2process,nentries)
+if quickrun: n2process = min(5000,nentries)
+else: n2process = nentries
+    
 print ('n(entries) = '+str(n2process))
 
 #feed the tree to delphes,set up which branches need to be used
@@ -91,7 +91,7 @@ templateStAxis = hHtTemplate.GetXaxis()
 
 ##Create output file
 infileID = fnamekeyword.split('/')[-1].replace('.root','')
-newname = 'littletree-'+infileID+'.root'
+newname = 'littletree_fin'+infileID.replace('*','')+'.root'
 fnew = TFile(newname,'recreate')
 print ('creating '+newname)
 
@@ -123,7 +123,6 @@ elif 'GJet' in fnamekeyword:
 else:
     CrossSectionPb[0] = 1
     nsmears = 0              
-
 
 print ('CrossSectionPb[0] '+str(CrossSectionPb[0]))
 littletree = TTree('littletree','littletree')
@@ -182,7 +181,6 @@ littletree.Branch('NLeps',NLeps,'NLeps/I')
 photons = std.vector('TLorentzVector')()
 littletree.Branch('photons',photons)    
 
-
 #prepareLittleTree(littletree)
 hSt = TH1F('hSt','hSt',120,0,2500)
 hSt.Sumw2()
@@ -211,7 +209,7 @@ for ientry in range(n2process):
     c.GetEntry(ientry)
 
     if ientry%printevery==0:
-        print ("processing event %d/%d; time remaining: %f"(ientry,n2process,time.time()-t0,branchMissingET[0].MET))
+        print ("processing event %d/%d; time remaining: %f" % (ientry,n2process,time.time()-t0))
 
     tcounter.Fill()
     weight = CrossSectionPb
@@ -503,7 +501,7 @@ hTotFit.Write()
 
 littletree.Write()
 tcounter.Write()
-print ('just created'+fnew.GetName())
+print ('just created '+fnew.GetName())
 fnew.Close()
 
 
