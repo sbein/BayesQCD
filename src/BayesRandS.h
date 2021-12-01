@@ -39,7 +39,6 @@ void findJetToPin(std::vector<UsefulJet> jetVec, int nparams, int & ipin, double
     ipin = -1; cstart = 1.0;
     return;  
   }
-  //cout << "high met event, " << mhtvec.Pt() << endl;
   for (unsigned int i = 0; i<nparams; i++)
     {
       double denom = 2*(-pow(desiredMht,2)+pow(jetVec[i].Pt(),2)+pow(mhtPt,2)+2*(jetVec[i].Pt())*
@@ -60,7 +59,7 @@ void findJetToPin(std::vector<UsefulJet> jetVec, int nparams, int & ipin, double
   	return;
       }
     }
-  cout << mhtPt << " couldn't find jet to pin, returning 1" << endl;
+  //cout << mhtPt << " couldn't find jet to pin, returning 1" << endl;
   ipin = -2; cstart = 1.0;
   return;
 }
