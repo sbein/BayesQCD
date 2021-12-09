@@ -12,7 +12,7 @@ import time
 hardmet_jetetacut = 5.0 # eta acceptance for jets in hard MET
 hardmet_jetptcut = 30.0 # pT threshold for jets going in to hard MET
 isdata = False # in case this is adapted to run over data
-rebalancedMetCut = 120 #maximum rebalanced hard MET value accepted as a seed (should be less than the analysis baseline)
+rebalancedMetCut = 120 #somewhat tunable maximum rebalanced hard MET value accepted as a seed (should be less than the analysis baseline)
 hardMetCutForSkim = 120
 
 ##load in delphes libraries to access input collections:
@@ -62,7 +62,6 @@ treeReader = ExRootTreeReader(c)
 numberOfEntries = treeReader.GetEntries()
 branchHT = treeReader.UseBranch("ScalarHT")
 branchJets = treeReader.UseBranch("Jet")
-branchGenJet = treeReader.UseBranch("GenJet")
 branchMissingET = treeReader.UseBranch("MissingET")
 branchGenMissingET = treeReader.UseBranch("GenMissingET")
 branchPhoton = treeReader.UseBranch("Photon")
@@ -97,7 +96,7 @@ print ('creating '+newname)
 
 CrossSectionPb = np.zeros(1,dtype=float)
 
-#set cross section based on the file name
+#set cross section based on the file name.
 isqcd = False
 isgjet = False
 if '_qcd_' in fnamekeyword: 
@@ -214,7 +213,7 @@ for ientry in range(n2process):
     tcounter.Fill()
     weight = CrossSectionPb
 
-    #the acme objects are the objects in the event presumed to be measured perfectly - prompt electrons, muons, photons, etc...
+    #the acme objects are the isolated particles in the event who's energy is presumed to be measured perfectly: ele, mu, pho, etc...
     #we don't rebalance and/or smear these objects, so they need to be kept track of independently
     acme_objects = vector('TLorentzVector')()
 
@@ -227,8 +226,10 @@ for ientry in range(n2process):
         if not pho.PT>100: continue ####
         if not abs(pho.Eta)<5.0: continue
         tlvpho = TLorentzVector()
-        tlvpho.SetPtEtaPhiE(pho.PT,pho.Eta,pho.Phi,pho.E)        
-        #found delphes had a few unexplainable ECal spikes - these must be dealt with on an exp-by-exp basis
+        tlvpho.SetPtEtaPhiE(pho.PT,pho.Eta,pho.Phi,pho.E)
+
+        #found delphes had a few unexplainable ECal spikes - these must be dealt with on an case-by-case basis
+        
         isspike = False #trying to do away with this for the moment
         if isgjet:
             isspike = True
@@ -248,8 +249,21 @@ for ientry in range(n2process):
             recophotons.push_back(tlvpho)
             acme_objects.push_back(tlvpho)
 
-            
+    #for now let's treat these spikes like something that can be filtered
     if not nspikes==0: continue ##spikes!
+
+    #tau background must be measured in some other way, since it has real MET.
+    if isqcd or isgjet:
+        ngentaus = 0
+        for igp_,gp_ in enumerate(branchParticles):            
+            if not gp_.PT>10: continue
+            if abs(gp_.PID) ==15: 
+                ngentaus+=1
+                break
+        if ngentaus>0: 
+            #events with taus have real MET and must be predicted by another method
+            continue
+        
     if len(recophotons)>0: phopt,phoeta = recophotons[0].Pt(),recophotons[0].Eta()
     else: phopt,phoeta = -1,-11
 
@@ -257,7 +271,7 @@ for ientry in range(n2process):
     photons.clear()
     for photon in recophotons: photons.push_back(photon)
 
-    #build up the vector of electrons using TLorentzVectors;         
+    #build vector of electrons using TLorentzVectors;         
     recoelectrons = vector('TLorentzVector')()
     for iel,el in enumerate(branchElectron):
         if not el.PT>10: continue
@@ -270,7 +284,7 @@ for ientry in range(n2process):
         if not len(recoelectrons)==0: continue
 
     recomuons = vector('TLorentzVector')()
-    #build up the vector of muons using TLorentzVectors; 
+    #build vector of muons using TLorentzVectors; 
     for imu,mu in enumerate(branchMuon):
         if not mu.PT>10: continue
         if not abs(mu.Eta)<5.0: continue
@@ -285,6 +299,7 @@ for ientry in range(n2process):
     if vetoleptons:
         if not len(recomuons)==0: continue
 
+    #to be the vectorial sum of presumed perfectly measured energy
     AcmeVector = TLorentzVector()
     AcmeVector.SetPxPyPzE(0,0,0,0)
     for obj in acme_objects: AcmeVector+=obj		
@@ -294,9 +309,7 @@ for ientry in range(n2process):
     ##declare empty vector of UsefulJets (in c++,std::vector<UsefulJet>):
     recojets = vector('UsefulJet')()
 
-
     #build up the vector of jets using TLorentzVectors; 
-    #this is where you have to interface with the input format you're using
     onlygoodjets = True
     for ijet,jet in enumerate(branchJets):
         if not jet.PT>15: continue
@@ -315,7 +328,6 @@ for ientry in range(n2process):
     if not onlygoodjets: continue
 
 
-
     tHardMetVec = getHardMet(recojets,hardmet_jetptcut,hardmet_jetetacut) # for debugging
     tHardMhtVec = tHardMetVec.Clone() # for debugging
     tHardMetVec-=AcmeVector # for debugging
@@ -327,27 +339,6 @@ for ientry in range(n2process):
         if not abs(jet.Eta())<2.4: continue
         tmindphi = min(tmindphi,abs(jet.DeltaPhi(tHardMetVec)))
         
-
-    allgenjets = vector('UsefulJet')()
-    genjets_ = vector('TLorentzVector')()
-    #build up the vector of jets using TLorentzVectors; 
-    #user should interface with the input format of the event using
-    for ijet,jet in enumerate(branchGenJet):
-        #if not jet.PT>15: continue
-        #if not abs(jet.Eta)<5: continue
-        tlvjet = TLorentzVector()
-        tlvjet.SetPtEtaPhiE(jet.PT,jet.Eta,jet.Phi,jet.PT*TMath.CosH(jet.Eta))
-        ujet = UsefulJet(tlvjet)
-        allgenjets.push_back(ujet)
-        if calcMinDr(acme_objects,tlvjet,0.3)<0.3: 
-            continue		
-        genjets_.push_back(tlvjet)
-    gSt = getHt(genjets_,hardmet_jetptcut)
-    for obj in acme_objects: gSt+=obj.Pt()
-    hSt.Fill(gSt,1)
-
-    matchedCsvVec = createMatchedCsvVector(genjets_,recojets)
-    genjets = CreateUsefulJetVector(genjets_,matchedCsvVec)
 
     ##a few global objects
     MetVec = TLorentzVector()
@@ -364,45 +355,30 @@ for ientry in range(n2process):
     if not abs(branchMissingET[0].MET-tHardMetPt)<100: continue
     if not tSt>tHardMetPt: continue
 
-
-    if isqcd or isgjet:
-        ngentaus = 0
-        for igp_,gp_ in enumerate(branchParticles):            
-            if not gp_.PT>10: continue
-            if abs(gp_.PID) ==15: 
-                ngentaus+=1
-                break
-        if ngentaus>0: 
-            #events with taus have real MET and must be predicted by another method
-            continue
-
-
+    #
     tNJets = countJets(recojets,hardmet_jetptcut)
     tBTags = countBJets(recojets,2.4)
 
 
-
+    #do reblancing, which knows about global variable _Templates_
     fitsucceed = RebalanceJets(recojets)
     rebalancedJets = _Templates_.dynamicJets
 
-
+    #derive any event quantities from the rebalanced jets
     mHardMetVec = getHardMet(rebalancedJets,hardmet_jetptcut,hardmet_jetetacut)
     mHardMetVec-=AcmeVector
     mHardMetPt,mHardMetPhi = mHardMetVec.Pt(),mHardMetVec.Phi()
 
-    hope = (fitsucceed and mHardMetPt<rebalancedMetCut)
+    
+    eventWasSufficientlyRebalanced = (fitsucceed and mHardMetPt<rebalancedMetCut)
 
-    redoneMET = redoMET(MetVec,recojets,rebalancedJets)
-    mMetPt,mMetPhi = redoneMET.Pt(),redoneMET.Phi()
-
-
+    #keep track of numbers of insufficiently rebalanced events, potential weight or for systematic studies?
     hTotFit.Fill(tNJets,weight)
-    if hope: hPassFit.Fill(tNJets,weight)
-
+    if eventWasSufficientlyRebalanced: hPassFit.Fill(tNJets,weight)
         
     weight = CrossSectionPb / nsmears
 
-
+    #fill the tree with unspoiled event characteristics
     if tHardMetPt>hardMetCutForSkim:
         Jets.clear()
         jetsRebalanced.clear()
@@ -436,10 +412,9 @@ for ientry in range(n2process):
 
         littletree.Fill()
 
-
+    #smear the seed events to make "new reco data"
     for i in range(nsmears):
-        if not hope: 
-            break
+        if not eventWasSufficientlyRebalanced:  break
         RplusSJets = smearJets(rebalancedJets,99+_Templates_.nparams)
         rpsHt = getHt(RplusSJets,hardmet_jetptcut,2.4)
         rpsHt5 = getHt(RplusSJets,hardmet_jetptcut,5.0)
@@ -461,6 +436,7 @@ for ientry in range(n2process):
             if not abs(jet.Eta())<2.4: continue            
             rpsmindphi = min(rpsmindphi,abs(jet.DeltaPhi(rpsHardMetVec)))            
 
+        #fill the tree with R&S collections
         if rpsHardMetPt>hardMetCutForSkim:
             Jets.clear()
             jetsRebalanced.clear()
@@ -491,6 +467,7 @@ for ientry in range(n2process):
             littletree.Fill()
 	
 
+#write any objects needed
 fnew.cd()
 hGenMetGenHardMetRatio.Write()
 hSt.Write()
