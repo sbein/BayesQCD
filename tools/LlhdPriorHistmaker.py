@@ -14,7 +14,6 @@ mettyobject_code = mettyobject_code_dict[MetConstraintName]
 
 ###stuff that would be nice in a config file
 binPt = [0,8,10,15,20,25,30,35,40,50,70,100,150,200,300,400,500,700,1000,10000]
-#binPt = [0,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,40,44,48,52,56,60,66,72,78,84,90,100,110,120,130,140,150,160,170,180,190,200,220,240,260,280,300,330,360,390,420,450,500,550,600,650,700,750,800,900,1000,10000]
 binEta = [0,0.4,0.8,1.2,1.6,2.0,2.5,6.0]#using this march 7 2017
 binHt = [0,10000]
 
@@ -69,6 +68,7 @@ newname = 'llhd-prior-hists-'+fnamekeyword.split('/')[-1].replace('.root','')+'.
 fnew = TFile(newname, 'recreate')
 print 'creating', newname
 
+##Create a few histograms which will keep track of the binning of the templates
 hHt       = makeTh1("hHt","HT for number of events", 250,0,5000)
 hResponseVsGenPt = TH2F('gResponseVsGenPt','gResponseVsGenPt',1000,0,1000,400,0,4)
 binPtArr = array('d',binPt)
@@ -84,6 +84,7 @@ nBinHt = len(binHtArr)-1
 hHtTemplate = TH1F('hHtTemplate','hHtTemplate',nBinHt,binHtArr)
 templateHtAxis = hHtTemplate.GetXaxis()
 
+##create lists of histograms
 hResGenTemplates = ['']
 hResRecTemplates = ['']
 hResGenTemplatesB = ['']
@@ -125,7 +126,7 @@ nbinsDphi = binning_templates['DPhi1'][0]
 lowDphi = binning_templates['DPhi1'][1]
 highDphi = binning_templates['DPhi1'][2]
 
-
+##GEN-MET prior binned in b-jet multiplicity
 hMetConstraintTemplatesB0 = ['']
 hMetConstraintTemplatesB1 = ['']
 hMetConstraintTemplatesB2 = ['']
@@ -163,7 +164,7 @@ for ientry in range(nentries):
 
 	##some universal selection
 	weight = 1
-		
+
 	if not len(list(branchPhoton))==0: continue
 	if not len(list(branchElectron))==0: continue
 	if not len(list(branchMuon))==0: continue		
@@ -193,11 +194,11 @@ for ientry in range(nentries):
 		ujet = UsefulJet(tlvjet, jet.BTag)
 		genjets.push_back(ujet)
 
-	ght = getHt(genjets, 30)# make HT include the neutrinos 
+	ght = getHt(genjets, 30)
 	iht = templateHtAxis.FindBin(ght)      
 
 
-	gHardMetVec = getHardMet(genjets,lhdMhtThresh)# changed from genjets, why not?
+	gHardMetVec = getHardMet(genjets,lhdMhtThresh)
 	gHardMetPt, gHardMetPhi = gHardMetVec.Pt(), gHardMetVec.Phi()
 	RecoMetVec = mkmet(branchMissingET[0].MET,branchMissingET[0].Phi)
 
@@ -228,7 +229,7 @@ for ientry in range(nentries):
 				dRbig = dR_
 				matched = True
 				pt0 = rjet.Pt()
-				variation = 0 # this can be used for JER scale factors
+				variation = 0 # this can be hijacked for JER scale factors
 				pt1 = max(0.,gpt+(1+variation)*(pt0-gpt))
 				response = pt1/gpt
 				sumpt = calcSumPt(recojets, rjet, 0.8, 0)###0.8 is twice jet radius
@@ -264,16 +265,8 @@ for ientry in range(nentries):
 	elif nGenJets>1:
 		hMetConstraintTemplatesB0[iht].Fill(mettyobject,weight)
 		hHardMetPhiTemplatesB0[iht].Fill(abs(genjets[0].tlv.DeltaPhi(gHardMetVec)),weight)
-	
-	#if ientry>5: 
-	#	exit(0)
 
-	jets = branchJets
-	#for ijet, jet in enumerate(jets):
-	#	print ijet, jet.PT, jet.Eta, jet.Phi, jet.BTag
 
-	#fillth1(hHt, getattr(c, 'ScalarHT.HT'))	
-	#if ientry>3: break
 
 fnew.cd()
 hHt.Write()
