@@ -5,28 +5,23 @@ from glob import glob
 gROOT.SetBatch(1)
 gStyle.SetOptStat(0)
 
-#python tools/DrawAnalyze.py "output/smallchunks/littletree*T2qqSq1200Chi1100*.root"
-#python tools/DrawAnalyze.py "output/smallchunks/littletree*T2qqSq1225Chi1200*.root"
-
 '''
-python tools/DrawAnalyze.py "output/smallchunks/littletree*qcd*.root" 
-python tools/DrawAnalyze.py "output/smallchunks/littletree*T2qqSq1150Chi1100*.root"
-python tools/DrawAnalyze.py "output/smallchunks/littletree*Top*.root"
-python tools/DrawAnalyze.py "output/smallchunks/littletree*Weak*.root"
-rm weightedHists_littletreeAll_YesAcme.root && hadd weightedHists_littletreeAll_YesAcme.root weightedHists_littletreeWeak_YesAcme.root weightedHists_littletreeqcd_YesAcme.root weightedHists_littletreeTop_YesAcme.root
+e.g.,
 python tools/DrawAnalyze.py "output/smallchunks/littletree*GJet*.root"
-'''
+
 #follow up with:
 #hadd weightedHists_littletreeAll_YesAcme.root weightedHists_littletreeqcd_YesAcme.root weightedHists_littletreeWZ_YesAcme.root
+'''
 
 try: fileskey = sys.argv[1]
-except: fileskey = '/eos/uscms//store/user/sbein/RebalanceAndSmear/Run2ProductionV17/*Summer16v3.QCD*.root'
+except:
+    print 'please enter path to input files, e.g.'
+    print 'python tools/DrawAnalyze.py "output/smallchunks/littletree*GJet*.root"'
 
 print 'fileskey', fileskey
 
 
 universalconstraint = '1 == 1'#' abs(HardMetMinusMet)<80 && mva_Photons1Et>80'
-#universalconstraint = ' abs(HardMetMinusMet)<80 && mva_Photons1Et>80'
 acmestr = 'NoAcme' if 'NoAcme' in fileskey else 'YesAcme'
 
 fins = glob(fileskey)
@@ -42,8 +37,6 @@ chain.Show(0)
 print 'nevents =', chain.GetEntries(), nev_total
 
 evtweight = 'CrossSectionPb/'+str(nev_total)
-#evtweight = '1/'+str(nev_total)
-
 
 
 plotBundle = {}
@@ -98,14 +91,6 @@ for key in plotBundle:
     hrands.Write('h'+hrands.GetName())
     hobs.Write('h'+hobs.GetName())
     c1.Print('pdfs/ClosureSkims/'+key+'.pdf')        
-     
-
-
-
-
-
-
-
 
 
 print 'just created', fnew.GetName()

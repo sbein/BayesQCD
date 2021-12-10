@@ -6,6 +6,8 @@ from glob import glob
 import numpy as np
 import time
 
+#code for running over input file (in this case of Delphes format), and creating a light-weight skim with the R&S collections
+
 #python tools/MaximizePosteriorMakeTree.py --fnamekeyword /nfs/dust/cms/user/beinsam/RebalanceAndSmear/CMSSW_10_1_0/src/SampleProduction/delphes/rootfiles_widenedhcalStep7/delphes_Weak_98of499.root
 
 ### a few parameters to set that define the selection associated with the hard MET
