@@ -31,6 +31,9 @@ We can run the code over a QCD file by doing:
 
 ```
 python tools/skimDataRebalanceAndSmear.py --quickrun True [--fnamekeyword <path Delphes tree file name, wrap in quotes if using wildcards>]
+#if you have access to the DESY naf area, you are welcome to try specifically
+python tools/skimDataRebalanceAndSmear.py --fnamekeyword "/nfs/dust/cms/user/beinsam/RebalanceAndSmear/CMSSW_10_1_0/src/SampleProduction/delphes/rootfiles_widenedhcalStep7/delphes_qcd_*.root"  --quickrun True
+#but otherwise, you can use your own Fake MET/QCD delphes file.
 ```
 
 This script takes as input the jet response histograms and prior PDF histograms, which should be remade each time the experiment changes. 
@@ -43,5 +46,5 @@ python tools/DrawAnalyze.py <file name containing the skim, produced by the last
 
 This creates both a set of pdfs as well as a root file with canvases. The dictionary plotBundle can be modified to produce additional plots which are specified by expressions involving the names of the branches of the skim. One will notice that in this example, the histograms  suffer somewhat from low statistics, but it's just an example based on one file. 
 
-#python tools/skimDataRebalanceAndSmear.py --fnamekeyword "/nfs/dust/cms/user/beinsam/RebalanceAndSmear/CMSSW_10_1_0/src/SampleProduction/delphes/rootfiles_widenedhcalStep7/delphes_qcd_*.root"  --quickrun True
+
 
