@@ -21,7 +21,7 @@ note: since there are many times more R&S events than original events due to mul
 Provided that ROOT is installed and pyROOT is enabled, the code can be checked out via
 
 ```
-git clone https://github.com/sbein/BayesQcd/
+git clone https://github.com/sbein/BayesQcd/ -b public
 cd BayesQcd/
 mkdir pdfs
 ```
