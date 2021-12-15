@@ -31,7 +31,8 @@ We can run the code over a QCD file by doing:
 
 ```
 python tools/skimDataRebalanceAndSmear.py --quickrun True [--fnamekeyword <path Delphes tree file name, wrap in quotes if using wildcards>]
-#if you have access to the DESY naf area, you are welcome to try specifically
+
+# of course if you have access to the DESY naf area, you are welcome to try specifically
 python tools/skimDataRebalanceAndSmear.py --fnamekeyword "/nfs/dust/cms/user/beinsam/RebalanceAndSmear/CMSSW_10_1_0/src/SampleProduction/delphes/rootfiles_widenedhcalStep7/delphes_qcd_*.root"  --quickrun True
 #but otherwise, you can use your own Fake MET/QCD delphes file.
 ```
