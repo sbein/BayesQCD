@@ -23,8 +23,6 @@ Provided that ROOT is installed and pyROOT is enabled, the code can be checked o
 ```
 git clone https://github.com/sbein/BayesQcd/
 cd BayesQcd/
-mkdir jobs
-mkdir output
 mkdir pdfs
 ```
 
@@ -32,7 +30,7 @@ mkdir pdfs
 We can run the code over a QCD file by doing: 
 
 ```
-python tools/MaximizePosteriorClean.py --quickrun True [--fnamekeyword <path Delphes tree file name, wrap in quotes if using wildcards>]
+python tools/skimDataRebalanceAndSmear.py --quickrun True [--fnamekeyword <path Delphes tree file name, wrap in quotes if using wildcards>]
 ```
 
 This script takes as input the jet response histograms and prior PDF histograms, which should be remade each time the experiment changes. 
@@ -40,8 +38,10 @@ This script takes as input the jet response histograms and prior PDF histograms,
 
 One can open up this file and browse the TTree object (littletree). Note it contains a branch IsRandS, which is a boolean that specifies whether an event is an original un-sullied seed event (false) or a rebalanced and smeared event (true). The latter forms the basis of the prediction, and is what is used in the real data. We can also call this script to draw weighted comparisons between the original and R&S distributions:
 ```
-python tools/DrawAnalyzeClean.py littletree-delphes_qcd_12of80.root
+python tools/DrawAnalyze.py <file name containing the skim, produced by the last step, e.g., littletree-delphes_qcd_12of80.root>
 ```
 
 This creates both a set of pdfs as well as a root file with canvases. The dictionary plotBundle can be modified to produce additional plots which are specified by expressions involving the names of the branches of the skim. One will notice that in this example, the histograms  suffer somewhat from low statistics, but it's just an example based on one file. 
+
+#python tools/skimDataRebalanceAndSmear.py --fnamekeyword "/nfs/dust/cms/user/beinsam/RebalanceAndSmear/CMSSW_10_1_0/src/SampleProduction/delphes/rootfiles_widenedhcalStep7/delphes_qcd_*.root"  --quickrun True
 
