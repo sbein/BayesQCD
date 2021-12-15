@@ -15,7 +15,7 @@ hardmet_jetetacut = 5.0 # eta acceptance for jets in hard MET
 hardmet_jetptcut = 30.0 # pT threshold for jets going in to hard MET
 isdata = False # in case this is adapted to run over data
 rebalancedMetCut = 120 #somewhat tunable maximum rebalanced hard MET value accepted as a seed (should be less than the analysis baseline)
-hardMetCutForSkim = 120
+hardMetCutForSkim = 0
 
 ##load in delphes libraries to access input collections:
 gSystem.Load("/nfs/dust/cms/user/beinsam/RebalanceAndSmear/CMSSW_10_1_0/src/SampleProduction/delphes/build/libDelphes")
@@ -27,7 +27,8 @@ gROOT.ProcessLine(open('src/BayesRandS.cc').read())
 exec('from ROOT import *')
 
 ##read in command line arguments
-defaultInfile_ = "/nfs/dust/cms/user/beinsam/RebalanceAndSmear/CMSSW_10_1_0/src//SampleProduction/delphes/rootfiles_widenedhcalStep7/delphes_qcd_12of80.root"
+#defaultInfile_ = "/nfs/dust/cms/user/beinsam/RebalanceAndSmear/CMSSW_10_1_0/src//SampleProduction/delphes/rootfiles_widenedhcalStep7/delphes_qcd_12of80.root"
+defaultInfile_ = "/nfs/dust/cms/user/beinsam/RebalanceAndSmear/CMSSW_10_1_0/src/SampleProduction/delphes/rootfiles_widenedhcalStep7/delphes_GJet*31*.root"
 import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("-v","--verbosity",type=int,default=1,help="analyzer script to batch")
@@ -54,7 +55,7 @@ for fname in inputFiles:
     c.Add(fname)
 nentries = c.GetEntries()
 c.Show(0)
-if quickrun: n2process = min(5000,nentries)
+if quickrun: n2process = min(20000,nentries)
 else: n2process = nentries
     
 print ('n(entries) = '+str(n2process))

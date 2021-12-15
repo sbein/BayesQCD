@@ -3,7 +3,7 @@ from array import array
 
 tl = TLatex()
 tl.SetNDC()
-cmsTextFont = 61
+labelTextFont = 61
 extraTextFont = 50
 lumiTextSize = 0.6
 lumiTextOffset = 0.2
@@ -31,6 +31,7 @@ binning['BTags']=[4,0,4]
 binning['Ht']=[40,0,3000]
 binning['St']=binning['Ht']
 binning['MinDPhiHardMetJets'] = [16,0,3.2]
+binning['MinDPhiJetsHardMetJets'] = [16,0,3.2]
 binning['DPhiPhoPho'] = [16,0,3.2]
 binning['DPhi1']=[16,0,3.2]
 binning['DPhi2']=[16,0,3.2]
@@ -60,8 +61,6 @@ binningMa5['NPix']=binning['NTags']
 
 binningUser = dict(binning)
 binningUser['HardMet'] = [0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,200,250,450]
-#binningUser['HardMet'] = [15,0,300]
-#binningUser['HardMet'] = [30,20,920]
 
 binning_templates = {}
 binning_templates['HardMet']=[300,0,600]
@@ -83,7 +82,6 @@ binning_templates['Jet3Eta']=[20,-3,3]
 binning_templates['Jet4Pt']=[20,0,800]
 binning_templates['Jet4Eta']=[20,-3,3]
 binning_templates['DPhi1']=[126,0,3.15]
-#binning_templates['DPhi1']=[126,-3.15,3.15]
 binning_templates['DPhi2']=binning_templates['DPhi1']
 binning_templates['DPhi3']=binning_templates['DPhi1']
 binning_templates['DPhi4']=binning_templates['DPhi1']
@@ -310,7 +308,7 @@ def mkmet(metPt, metPhi):
     
 datamc = 'Data'
 def stamp(lumi='35.9', showlumi = False, WorkInProgress = True):    
-	tl.SetTextFont(cmsTextFont)
+	tl.SetTextFont(labelTextFont)
 	tl.SetTextSize(0.98*tl.GetTextSize())
 	tl.DrawLatex(0.135,0.915, 'CMS')
 	tl.SetTextFont(extraTextFont)
@@ -340,75 +338,6 @@ def calcTrackJetIso(trk, jets):
 		if not jet.pt()>30: continue
 		if  TMath.Sqrt( (trk.eta()-jet.eta())**2 + (trk.phi()-jet.phi())**2)<0.5: return False
 	return True
-
-'''
-def calcMiniIso(trk, tracks):
-	pt = trk.pt()
-	ptsum = -pt
-	if pt<=50: R = 0.2
-	elif pt<=200: R = 10.0/pt
-	else: R = 0.05
-	for track in tracks:
-		dR = TMath.Sqrt( (trk.eta()-track.eta())**2 + (trk.phi()-track.phi())**2)
-		if dR<R: ptsum+=track.pt()
-	return ptsum/trk.pt()
-
-
-def calcSumPt(jets, obj, conesize=0.6, thresh=10):
-    sumpt_ = 0
-    for jet in jets:
-        if not jet.Pt()>thresh:
-            continue
-        if not (obj.DeltaR(jet)<conesize):
-            continue
-        sumpt_+=jet.Pt()
-    return sumpt_	
-
-
-def getDPhis(metvec,jetvec):
-    dphilist = []
-    for j in range(4):
-        try:dphilist.append(abs(metvec.DeltaPhi(jetvec[j].tlv)))
-        except: dphilist.append(-5)
-    return dphilist
-    
-def isMatched(obj, col, dR=0.02, verbose = False):
-	matchedIdx = -1
-	bigDR = inf
-	for ic, thing in enumerate(col):
-		dr = thing.DeltaR(obj)
-		if verbose: print 'dr=',dr
-		if dr<dR:
-			ismatched = True
-			return thing
-	return False
-	
-def isMatched_(obj, col, dR=0.02, verbose = False):
-	matchedIdx = -1
-	bigDR = inf
-	for ic, thing in enumerate(col):
-		dr = thing[0].DeltaR(obj[0])
-		if verbose: print 'dr=',dr
-		if dr<dR:
-			ismatched = True
-			return thing
-	return False
-
-def getLeadingGenBJet(GenJets, RecoJets, BTAG_CSV):
-    for gjet in GenJets:
-        for rjet in RecoJets:
-            dR_ = gjet.tlv.DeltaR(rjet.tlv)
-            if dR_<0.4 and rjet.csv>BTAG_CSV: return gjet
-    emptyvec = UsefulJet()
-    return emptyvec
-
-def getLeadingBJet(RecoJets, CsvVec, BTAG_CSV):
-    for ireco in range(len(RecoJets)):
-        if not RecoJets[ireco].Pt()>30: continue
-        if CsvVec[ireco]>BTAG_CSV: return [ireco,RecoJets[ireco]]
-    emptyvec = TLorentzVector()
-    return [-1,emptyvec]
-'''
 
 
 def FabDraw(cGold,leg,hObserved,hComponents,datamc='mc',lumi='arbitrary', title = '', LinearScale=False, fractionthing='(bkg-obs)/obs'):
@@ -644,7 +573,7 @@ def FabDrawSystyRatio(cGold,leg,hObserved,hComponents,datamc='mc',lumi=35.9, tit
 	return hRatio, [histoMethodFracErrorNom, histoMethodFracErrorUp, histoMethodFracErrorDown, hComponentsUp, hComponentsDown, pad1, pad2]
 	
 def stampFab(lumi = 'n/a',datamc='MC'):
-	tl.SetTextFont(cmsTextFont)
+	tl.SetTextFont(labelTextFont)
 	tl.SetTextSize(1.6*tl.GetTextSize())
 	tl.DrawLatex(0.152,0.82, 'Delphes')
 	tl.SetTextFont(extraTextFont)

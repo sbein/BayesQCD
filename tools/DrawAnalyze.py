@@ -9,6 +9,8 @@ gStyle.SetOptStat(0)
 e.g.,
 python tools/DrawAnalyze.py "output/smallchunks/littletree*GJet*.root"
 
+python tools/DrawAnalyze.py "output/smallchunks/tree*qcd*.root"
+
 #follow up with:
 #hadd weightedHists_littletreeAll_YesAcme.root weightedHists_littletreeqcd_YesAcme.root weightedHists_littletreeWZ_YesAcme.root
 '''
@@ -44,7 +46,7 @@ plotBundle = {}
 plotBundle['Baseline_NJets'] = ['NJets>>hadc(9,1,10)','HardMetPt>120 && BTags==0',True]
 plotBundle['Baseline_HardMet'] = ['HardMetPt>>hadc(25,0,500)','1==1 && BTags==0',True]
 plotBundle['Baseline_HT'] = ['HT>>hadc(28,100,2900)','HardMetPt>120 && BTags==0',True]
-plotBundle['Baseline_MinDPhiHardMet'] = ['MinDPhiHardMet>>hadc(28,0.0,3.2)','HardMetPt>120 && BTags==0',True]
+plotBundle['Baseline_MinDPhiJetsHardMet'] = ['MinDPhiJetsHardMet>>hadc(28,0.0,3.2)','HardMetPt>120 && BTags==0',True]
     
 
 print 'fileskey', fileskey
