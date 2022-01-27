@@ -80,7 +80,6 @@ for key in plotBundle:
 
 
 
-'''
 c2 = mkcanvas('c2')
 
 drawarg = "Jets[JetsRebalanced_origIdx[0]].Pt()/GenJets[0].Pt()>>hadc(100,0,3)"
@@ -115,7 +114,6 @@ c2.Update()
 c2.Write('response')
 histJetResponse.Write()
 histRebalanced.Write()
-'''
 
 print 'just created', fnew.GetName()
 fnew.Close()
