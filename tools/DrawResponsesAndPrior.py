@@ -82,8 +82,8 @@ for ih, hname in enumerate(histnames):
         h.GetXaxis().SetTitle('#slash{p}_{T}^{hard} [GeV]')
     else:
         #h.Smooth(100)
-        h.Rebin(4)
-        h.GetXaxis().SetTitle('#Delta#phi(#slash{#vec{p}}_{T}^{hard}, #vec{p}_{T}^{1})')
+        h.Rebin(3)
+        h.GetXaxis().SetTitle('#Delta#phi(#slash{#vec{p}}_{T}^{hard}, #vec{p}_{T}^{j1})')
         a = 2
     h.GetYaxis().SetRangeUser(0,1.2*h.GetMaximum())        
     h.Smooth(100)
