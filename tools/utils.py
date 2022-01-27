@@ -106,7 +106,7 @@ def histoStyler(h,color=kBlack):
 	h.GetYaxis().SetLabelSize(size)
 	h.GetXaxis().SetTitleOffset(1.0)
 	h.GetYaxis().SetTitleOffset(1.05)
-	if not h.GetSumw2N(): h.Sumw2()
+	#if not h.GetSumw2(): h.Sumw2()
 	
 def makeHist(name, title, nb, low, high, color):
 	h = TH1F(name,title,nb,low,high)
