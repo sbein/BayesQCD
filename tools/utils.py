@@ -357,7 +357,7 @@ def FabDraw(cGold,leg,hObserved,hComponents,datamc='mc',lumi='arbitrary', title 
 	hComponents.reverse()        
 	if abs(hComponents[0].Integral(-1,999)-1)<0.001:
 		hComponents[0].GetYaxis().SetTitle('Normalized')
-	else: hComponents[0].GetYaxis().SetTitle('Events/GeV')
+	else: hComponents[0].GetYaxis().SetTitle('Events')
 	cGold.Update()
 	hObserved.GetYaxis().SetTitle('Normalized')
 	hObserved.GetYaxis().SetTitleOffset(1.15)
@@ -450,7 +450,7 @@ def FabDrawSystyRatio(cGold,leg,hObserved,hComponents,datamc='mc',lumi=35.9, tit
 	hComponents.reverse()        
 	if abs(hComponents[0].Integral(-1,999)-1)<0.001:
 		hComponents[0].GetYaxis().SetTitle('Normalized')
-	else: hComponents[0].GetYaxis().SetTitle('Events/GeV')
+	else: hComponents[0].GetYaxis().SetTitle('Events')
 	cGold.Update()
 	hObserved.GetYaxis().SetTitle('Normalized')
 	hObserved.GetYaxis().SetTitleOffset(1.15)
